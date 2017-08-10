@@ -1,18 +1,64 @@
 <ion-header>
-  <ion-navbar>
+  <!-- <ion-navbar>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
+    <ion-title>空气监测站分布情况</ion-title>
+     <button ion-button icon-only end> 
+       <ion-icon  name="menu"></ion-icon>
+       </button> 
+  </ion-navbar> -->
+  <ion-toolbar>
+    <ion-buttons start>
+      <button ion-button icon-only color='royal' menuToggle>
+        <ion-icon name='menu'></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title *ngIf=isMap>实况监测</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color='royal' (click)="changeView()">
+        <ion-icon *ngIf=isMap name='ios-list-box'></ion-icon>
+        <ion-icon *ngIf=!isMap name='ios-map'></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-searchbar type=text placeholder="城市筛选" [(ngModel)]="cityname" *ngIf=!isMap>
+    </ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-  <h3>Ionic Menu Starter</h3>
+<ion-content [ngClass]="{animated:true,slideOutLeft:!isMap,slideInLeft:isMap}">
 
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
+  <map mapid="map"></map>
 
-  <button ion-button secondary menuToggle>Toggle Menu</button>
+  <div class="marker-info animated" [ngClass]='{slideInUp:currentMarker,bounceOutDown:!currentMarker}'>
+    <!-- <ion-card [ngStyle]="currentMarker&&currentMarker.bgcolor||currentColor"> -->
+    <ion-card [ngStyle]="currentColor">
+      <ion-card-header>
+        <div class="close-marker-info">
+          {{currentMarker&&currentMarker.Name}}&nbsp;&nbsp;{{currentMarker&&currentMarker.text}}
+        </div>
+        <ion-icon (click)="_onClick()" name='ios-close-circle'></ion-icon>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf=currentMarker>
+          AQI:{{currentMarker&&currentMarker.aqi+" "}} 污染物:{{currentMarker&&currentMarker.pol+" "}} <br /> 时间：{{currentMarker&&currentMarker.utime}}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+<ion-content [ngClass]="{animated:true,'slideOutRight':isMap,'slideInRight':!isMap}">
+  <ion-list *ngIf='currentLists.length>0'>
+    <ion-item *ngFor="let marker of (currentLists|filtercity:cityname)">
+      <ion-thumbnail item-start>
+        <div style="width:56px;height:56px">
+          <div style="width:56px;height:56px;float:left; border-radius:56px;" [ngStyle]="{background:marker&&marker.pcolor}"></div>
+        </div>
+      </ion-thumbnail>
+      <h2>{{marker.Name}}&nbsp;&nbsp; {{marker&&marker.text}}</h2>
+      <p>AQI指数:{{marker.aqi}}</p>
+      <p>首要污染物:{{marker.pol}}</p>
+      <button ion-button clear item-end (click)='zoomTo(marker)'>查看</button>
+    </ion-item>
+  </ion-list>
 </ion-content>

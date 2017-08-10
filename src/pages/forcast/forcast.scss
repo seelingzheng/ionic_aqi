@@ -1,0 +1,30 @@
+page-forcast {
+   #m-div{
+    float: left;
+     position: absolute;
+    width: 100%;
+    // background: blue;
+    }
+    #list{
+        float: left;
+        position: absolute;
+        //  background: red;
+    }
+    .leaflet-div-icon{
+    background: transparent;
+    border: 0;
+    }
+    .marker-info{
+    width: 100%; 
+    position: absolute;
+    bottom: 10px;
+    z-index: 99999;
+    }
+    .marker-info-hide{ 
+    bottom: -200; 
+    }
+    .close-marker-info{
+        display: inline-block;
+        width: 90%;
+    }
+}

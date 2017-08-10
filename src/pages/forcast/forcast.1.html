@@ -1,0 +1,72 @@
+<!--
+  Generated template for the ForcastPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <!-- <ion-navbar>
+    <ion-title>forcast</ion-title>
+  </ion-navbar> -->
+  <ion-toolbar>
+    <ion-buttons start>
+      <button ion-button icon-only color='royal' menuToggle>
+        <ion-icon name='menu'></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>{{updatetime}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color='royal' (click)="changeView()">
+        <ion-icon *ngIf=isMap name='ios-list-box'></ion-icon>
+        <ion-icon *ngIf=!isMap name='ios-map'></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [hidden]=isMap>
+  <div id="m-div" [ngClass]="{animated:true,zoomOutUp:!isMap,zoomInUp:isMap}">
+    <!-- 地图展示 -->
+    <map mapid='fmap'></map>
+
+    <div class="marker-info animated" [ngClass]='{slideInUp:currentMarker,bounceOutDown:!currentMarker}'>
+      <ion-card [ngStyle]="currentColor">
+        <ion-card-header>
+          <div class="close-marker-info">
+            {{currentMarker&&currentMarker.Name}}({{currentMarker&&currentMarker.from.text}}<span *ngIf='currentMarker&&(currentMarker.to.text!=currentMarker.from.text)'>~{{currentMarker&&currentMarker.to.text}}</span>)
+          </div>
+          <ion-icon (click)="closeMarkerInfo()" name='ios-close-circle'></ion-icon>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf=currentMarker>
+            AQI指数:{{currentMarker&&currentMarker.AirIndex_From}}~{{currentMarker&&currentMarker.AirIndex_To}}
+            <br> 首要污染物:{{currentMarker&&currentMarker.PrimaryPollutant}}
+            <br> {{"描述："+currentMarker&&currentMarker.DetailInfo}}
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>
+<ion-content [hidden]=!isMap>
+  <!-- 列表展示 -->
+  <div id="list" [ngClass]="{animated:true,'zoomOutUp':isMap,'zoomInUp':!isMap}">
+    <ion-input type="text" placeholder="城市查询"></ion-input>
+    <ion-list *ngIf='forcastValues.length>0'>
+      <ion-item *ngFor="let marker of forcastValues">
+        <ion-thumbnail item-start>
+          <div style="width:56px;height:56px">
+            <div style="width:28px;height:56px;float:left; border-radius:56px 0 0 56px;" [ngStyle]="{background:marker&&marker.from.pcolor}"></div>
+            <div style="width:28px;height:56px;float:left; border-radius: 0 56px 56px 0 ;" [ngStyle]="{background:marker&&marker.to.pcolor}"></div>
+          </div>
+        </ion-thumbnail>
+        <h2>{{marker.Name}}({{marker.from&&marker.from.text}}<span *ngIf='marker&&(marker.to&&marker.to.text!=marker.from&&marker.from.text)'>~{{marker&&marker.to&&marker.to.text}}</span>)</h2>
+        <p>AQI指数:{{marker.AirIndex_From}}~{{marker.AirIndex_To}}</p>
+        <p>首要污染物:{{marker.PrimaryPollutant}}</p>
+        <button ion-button clear item-end (click)='zoomTo(marker)'>查看</button>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

@@ -1,0 +1,152 @@
+<!--
+  Generated template for the ForcastPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <!-- <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{updatetime}}</ion-title>
+    <button ion-button (click)="changeView()">
+       <ion-icon *ngIf=isMap name='ios-list-box'></ion-icon>
+        <ion-icon *ngIf=!isMap name='ios-map'></ion-icon>
+    </button> 
+  </ion-navbar> -->
+  <ion-toolbar>
+    <ion-buttons start>
+      <button ion-button icon-only color='royal' menuToggle>
+        <ion-icon name='menu'></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title *ngIf=isMap>{{updatetime}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color='royal' (click)="changeView()">
+        <ion-icon *ngIf=isMap name='ios-list-box'></ion-icon>
+        <ion-icon *ngIf=!isMap name='ios-map'></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-searchbar type=text placeholder="城市筛选" [(ngModel)]="cityname" *ngIf=!isMap>
+    </ion-searchbar>
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content [ngClass]="{animated:true,slideOutLeft:!isMap,slideInLeft:isMap}">
+
+  <!-- <div id="m-div" > -->
+  <!-- 地图展示 -->
+  <map mapid='fmap'></map>
+
+  <div class="marker-info animated" [ngClass]='{slideInUp:currentMarker,bounceOutDown:!currentMarker}'>
+    <ion-card [ngStyle]="currentColor" *ngIf='currentHours=="24h"'>
+      <ion-card-header>
+        <div class="close-marker-info">
+          {{currentMarker&&currentMarker.Name}}&nbsp;&nbsp;{{currentMarker&&currentMarker.from.text}}<span *ngIf='currentMarker&&(currentMarker.to.text!=currentMarker.from.text)'>~{{currentMarker&&currentMarker.to.text}}</span>
+        </div>
+        <ion-icon (click)="closeMarkerInfo()" name='ios-close-circle'></ion-icon>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf=currentMarker>
+          AQI指数:{{currentMarker&&currentMarker.AirIndex_From}}~{{currentMarker&&currentMarker.AirIndex_To}}
+          <br> 首要污染物:{{currentMarker&&currentMarker.PrimaryPollutant}}
+          <br> {{"描述："+currentMarker&&currentMarker.DetailInfo}}
+        </div>
+      </ion-card-content>
+    </ion-card>
+     <ion-card [ngStyle]="currentColor" *ngIf='currentHours=="48h"'>
+      <ion-card-header>
+        <div class="close-marker-info">
+          {{currentMarker&&currentMarker.Name}}&nbsp;&nbsp;{{currentMarker&&currentMarker.from48.text}}<span *ngIf='currentMarker&&(currentMarker.to48.text!=currentMarker.from48.text)'>~{{currentMarker&&currentMarker.to.text}}</span>
+        </div>
+        <ion-icon (click)="closeMarkerInfo()" name='ios-close-circle'></ion-icon>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf=currentMarker>
+          AQI指数:{{currentMarker&&currentMarker.Air48Index_From}}~{{currentMarker&&currentMarker.Air48Index_To}}
+          <br> 首要污染物:{{currentMarker&&currentMarker.Primary48Pollutant}}
+          <br> {{"描述："+currentMarker&&currentMarker.DetailInfo}}
+        </div>
+      </ion-card-content>
+    </ion-card>
+     <ion-card [ngStyle]="currentColor" *ngIf='currentHours=="72h"'>
+      <ion-card-header>
+        <div class="close-marker-info">
+          {{currentMarker&&currentMarker.Name}}&nbsp;&nbsp;{{currentMarker&&currentMarker.from72.text}}<span *ngIf='currentMarker&&(currentMarker.to72.text!=currentMarker.from72.text)'>~{{currentMarker&&currentMarker.to72.text}}</span>
+        </div>
+        <ion-icon (click)="closeMarkerInfo()" name='ios-close-circle'></ion-icon>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf=currentMarker>
+          AQI指数:{{currentMarker&&currentMarker.Air72Index_From}}~{{currentMarker&&currentMarker.Air72Index_To}}
+          <br> 首要污染物:{{currentMarker&&currentMarker.Primary72Pollutant}}
+          <br> {{"描述："+currentMarker&&currentMarker.DetailInfo}}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  <!-- </div> -->
+</ion-content>
+<ion-content [ngClass]="{animated:true,'slideOutRight':isMap,'slideInRight':!isMap}">
+  <ion-list *ngIf='forcastValues.length>0&&currentHours=="24h"'>
+    <ion-item *ngFor="let marker of (forcastValues|filtercity:cityname)">
+      <ion-thumbnail item-start>
+        <div style="width:56px;height:56px">
+          <div style="width:28px;height:56px;float:left; border-radius:56px 0 0 56px;" [ngStyle]="{background:marker.from&&marker.from.pcolor}"></div>
+          <div style="width:28px;height:56px;float:left; border-radius: 0 56px 56px 0 ;" [ngStyle]="{background:marker.to&&marker.to.pcolor}"></div>
+        </div>
+      </ion-thumbnail>
+      <h2>{{marker.Name}}&nbsp;&nbsp; {{marker.from&&marker.from.text}}<span *ngIf='marker.to&&marker.to.text!=marker.from&&marker.from.text'>~{{marker.to&&marker.to.text}}</span></h2>
+      <p>AQI指数:{{marker.AirIndex_From}}~{{marker.AirIndex_To}}</p>
+      <p>首要污染物:{{marker.PrimaryPollutant}}</p>
+      <button ion-button clear item-end (click)='zoomTo(marker)'>查看</button>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf='forcastValues.length>0&&currentHours=="48h"'>
+    <ion-item *ngFor="let marker of (forcastValues|filtercity:cityname)">
+      <ion-thumbnail item-start>
+        <div style="width:56px;height:56px">
+          <div style="width:28px;height:56px;float:left; border-radius:56px 0 0 56px;" [ngStyle]="{background:marker.from48&&marker.from48.pcolor}"></div>
+          <div style="width:28px;height:56px;float:left; border-radius: 0 56px 56px 0 ;" [ngStyle]="{background:marker.to48&&marker.to48.pcolor}"></div>
+        </div>
+      </ion-thumbnail>
+      <h2>{{marker.Name}}&nbsp;&nbsp;{{marker.from48&&marker.from48.text}}<span *ngIf='(marker.to48&&marker.to48.text)!=(marker.from48&&marker.from48.text)'>~{{marker.to48&&marker.to48.text}}</span></h2>
+      <p>AQI指数:{{marker.Air48Index_From}}~{{marker.Air48Index_To}}</p>
+      <p>首要污染物:{{marker.Primary48Pollutant}}</p>
+      <button ion-button clear item-end (click)='zoomTo(marker)'>查看</button>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf='forcastValues.length>0&&currentHours=="72h"'>
+    <ion-item *ngFor="let marker of (forcastValues|filtercity:cityname)">
+      <ion-thumbnail item-start>
+        <div style="width:56px;height:56px">
+          <div style="width:28px;height:56px;float:left; border-radius:56px 0 0 56px;" [ngStyle]="{background:marker.from72&&marker.from72.pcolor}"></div>
+          <div style="width:28px;height:56px;float:left; border-radius: 0 56px 56px 0 ;" [ngStyle]="{background:marker.to72&&marker.to72.pcolor}"></div>
+        </div>
+      </ion-thumbnail>
+      <h2>{{marker.Name}}&nbsp;&nbsp;{{marker.from72&&marker.from72.text}}<span *ngIf='(marker.to72&&marker.to72.text)!=(marker.from72&&marker.from72.text)'>~{{marker.to72&&marker.to72.text}}</span></h2>
+      <p>AQI指数:{{marker.Air72Index_From}}~{{marker.Air72Index_To}}</p>
+      <p>首要污染物:{{marker.Primary72Pollutant}}</p>
+      <button ion-button clear item-end (click)='zoomTo(marker)'>查看</button>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-segment [(ngModel)]=currentHours color="secondary">
+    <ion-segment-button value="24h" (ionSelect)="changeHours('24h')">
+      24小时
+    </ion-segment-button>
+    <ion-segment-button value="48h" (ionSelect)="changeHours('48h')">
+      48小时
+    </ion-segment-button>
+    <ion-segment-button value="72h" (ionSelect)="changeHours('72h')">
+      72小时
+    </ion-segment-button>
+  </ion-segment>
+</ion-footer>
